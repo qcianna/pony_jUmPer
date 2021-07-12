@@ -23,6 +23,19 @@ int main()
 
     srand(time(0));
 
+    int ten = 0;
+    int counter = 0;
+
+    sf::Text text;
+    sf::Font font;
+    font.loadFromFile("font.ttf");
+    text.setFont(font);
+    text.setString(std::to_string(counter));
+    text.setCharacterSize(24);
+    text.setFillColor(sf::Color::White);
+    text.setStyle(sf::Text::Bold);
+    text.setPosition(10, 10);
+
     sf::Texture bg;
     sf::Sprite bg_sprite;
     bg.loadFromFile("stars.jpg");
@@ -43,7 +56,7 @@ int main()
     for (int i = 1; i < N; i++)
     {
         x[i] = rand() % 550 - 50; 
-        y[i] = y[i - 1] - 100;
+        y[i] = y[i - 1] - 90;
     }
 
     sf::Texture pony;
@@ -60,7 +73,7 @@ int main()
 
     sf::Texture end;
     sf::Sprite end_sprite;
-    end.loadFromFile("end.jpg");
+    end.loadFromFile("end2.jpg");
     end_sprite.setTexture(end);
     end_sprite.setPosition(0, 0);
     end_sprite.setScale(window.getSize().x / static_cast<double>(end.getSize().x), window.getSize().y / static_cast<double>(end.getSize().y));
@@ -110,7 +123,17 @@ int main()
         for (int i = 0; i < N; i++)
         {
             if (pony_y + 150 >= y[i] && pony_y + 150 <= static_cast<double>(y[i]) + 45 && pony_x + 100 >= x[i] && pony_x + 50 <= static_cast<double>(x[i]) + 100)
+            {
+                //no zle i zly warunek :(((((
+                counter = i + ten;
+                text.setString(std::to_string(counter));
+                if ((counter-9) % 10 == 0)
+                {
+                    ten = ((counter + 1) / 10) * 10;
+                }
                 dy = -2;
+            }
+                
             if (y[i] > 900)
             {
                 y[i] = 0;
@@ -120,6 +143,7 @@ int main()
 
         pony_sprite.setPosition(pony_x, pony_y);
         window.draw(pony_sprite);
+        window.draw(text);
 
         int i_max = max(y, N);
         if (pony_y + 200 >= y[i_max] && (pony_x + 100 < x[i_max] || pony_x + 50 > static_cast<double>(x[i_max]) + 100))
