@@ -1,9 +1,10 @@
-#include <iostream>
+﻿#include <iostream>
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 #include <time.h>
 #include <windows.h>
-#define N 10
+#define N 9
 
 int max(int* tab, int size)
 {
@@ -26,7 +27,13 @@ int main()
     int ten = 0;
     int counter = 0;
 
+    sf::SoundBuffer sound_buffer;
+    sound_buffer.loadFromFile("makai-symphony-dragon-slayer.wav");
+    sf::Sound sound;
+    sound.setBuffer(sound_buffer);
+
     sf::Text text;
+    sf::Text info;
     sf::Font font;
     font.loadFromFile("font.ttf");
     text.setFont(font);
@@ -55,8 +62,8 @@ int main()
     y[0] = 800;
     for (int i = 1; i < N; i++)
     {
-        x[i] = rand() % 550 - 50; 
-        y[i] = y[i - 1] - 90;
+        x[i] = rand() % 450 + 30;
+        y[i] = y[i - 1] - 100;
     }
 
     sf::Texture pony;
@@ -73,10 +80,13 @@ int main()
 
     sf::Texture end;
     sf::Sprite end_sprite;
-    end.loadFromFile("end2.jpg");
+    end.loadFromFile("end.jpg");
     end_sprite.setTexture(end);
     end_sprite.setPosition(0, 0);
     end_sprite.setScale(window.getSize().x / static_cast<double>(end.getSize().x), window.getSize().y / static_cast<double>(end.getSize().y));
+
+    sound.setLoop(true);
+    sound.play();
 
     while (window.isOpen())
     {
@@ -124,20 +134,19 @@ int main()
         {
             if (pony_y + 150 >= y[i] && pony_y + 150 <= static_cast<double>(y[i]) + 45 && pony_x + 100 >= x[i] && pony_x + 50 <= static_cast<double>(x[i]) + 100)
             {
-                //no zle i zly warunek :(((((
-                counter = i + ten;
-                text.setString(std::to_string(counter));
-                if ((counter-9) % 10 == 0)
-                {
-                    ten = ((counter + 1) / 10) * 10;
-                }
                 dy = -2;
             }
                 
             if (y[i] > 900)
             {
                 y[i] = 0;
-                x[i] = rand() % 550 - 50;
+                x[i] = rand() % 450 + 30;
+            }
+
+            if (y[i] == pony_y)
+            {
+                counter++;
+                text.setString(std::to_string(counter));
             }
         }
 
@@ -149,6 +158,18 @@ int main()
         if (pony_y + 200 >= y[i_max] && (pony_x + 100 < x[i_max] || pony_x + 50 > static_cast<double>(x[i_max]) + 100))
         {
             window.draw(end_sprite);
+            info.setFont(font);
+            info.setString("press space");
+            info.setCharacterSize(90);
+            info.setFillColor(sf::Color(200, 120, 0));
+            info.setPosition(120, 410);
+            info.setStyle(sf::Text::Bold);
+            text.setString("Your score: " + std::to_string(counter));
+            text.setCharacterSize(32);
+            text.setFillColor(sf::Color(255, 173, 207));
+            text.setPosition(200, 550);
+            window.draw(info);
+            window.draw(text);
             window.display();
             bool mode = false;
             while (mode == false)
